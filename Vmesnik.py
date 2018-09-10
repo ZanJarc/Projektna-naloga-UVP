@@ -57,9 +57,22 @@ vnos_voznik_prostor.grid(row=3, column=1)
 
 
 def vnesi_podatke_voznik():
-    driver = MODEL.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
-    VOZNIKI.append(driver)
-    vnos_voznik_ime.delete(0, END), vnos_voznik_zacetek.delete(0, END), vnos_voznik_konec.delete(0, END), vnos_voznik_prostor.delete(0, END)
+    if len(vnos_voznik_ime.get()) == 0:
+        raise ValueError('Vsak voznik potrebuje ime!')
+    elif len(vnos_voznik_zacetek.get()) == 0:
+        raise ValueError('Vsak voznik potrebuje zacetek!')
+    elif len(vnos_voznik_konec.get()) == 0:
+        raise ValueError('Vsak voznik potrebuje konec!')
+    elif len(vnos_voznik_prostor.get()) == 0 or int(vnos_voznik_prostor.get()) <= 0:
+        raise ValueError('Vsak voznik potrebuje prostor!')
+    elif not vnos_voznik_prostor.get().isnumeric():
+        raise ValueError('Vnešeni podatek pri prostoru ni številka!')
+    elif vnos_voznik_konec.get() == vnos_voznik_zacetek.get():
+        raise ValueError('Voznik ne more imeti enakega konca in zacetka!')
+    else:
+        driver = MODEL.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
+        VOZNIKI.append(driver)
+        vnos_voznik_ime.delete(0, END), vnos_voznik_zacetek.delete(0, END), vnos_voznik_konec.delete(0, END), vnos_voznik_prostor.delete(0, END)
    
     
 
@@ -88,9 +101,18 @@ vnos_potnik_konec.grid(row=2, column=1)
 
 
 def vnesi_podatke_potnik():
-    passenger = MODEL.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
-    POTNIKI.append(passenger)
-    vnos_potnik_ime.delete(0, END), vnos_potnik_zacetek.delete(0, END), vnos_potnik_konec.delete(0, END)
+    if len(vnos_potnik_ime.get()) == 0:
+        raise ValueError('Vsak potnik potrebuje ime!')
+    elif len(vnos_potnik_zacetek.get()) == 0:
+        raise ValueError('Vsak potnik potrebuje zacetek!')
+    elif len(vnos_potnik_konec.get()) == 0:
+        raise ValueError('Vsak potnik potrebuje konec!')
+    elif vnos_potnik_konec.get() == vnos_potnik_zacetek.get():
+        raise ValueError('Potnik ne more imeti enakega konca in zacetka!')
+    else:
+        passenger = MODEL.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
+        POTNIKI.append(passenger)
+        vnos_potnik_ime.delete(0, END), vnos_potnik_zacetek.delete(0, END), vnos_potnik_konec.delete(0, END)
 
     
     
@@ -152,3 +174,4 @@ prostor_za_odgovor.pack()
 
 
 okno.mainloop()
+
