@@ -1,6 +1,6 @@
 ﻿# Projektna-naloga-UVP
 
-##Razvoz na slovenskem avtocestnem križu
+## Razvoz na slovenskem avtocestnem križu
 
 Projektna naloga, ki sem jo naredil v sklopu predmeta Uvod v programiranje v študijskem letu 2017/2018.
 
