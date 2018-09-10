@@ -37,9 +37,8 @@ prostor_za_vnos_voznik.grid(row=0, column=0)
 prostor_za_vnos_potnik = Frame(VNOS)#PROSTOR ZA VNOS PODATKOV POTNIKOV
 prostor_za_vnos_potnik.grid(row=0, column=1)
 
+###TUKAJ BOM NAREDIL TREEVIEW ZA ODGOVORE
 
-'''prostor_za_podatke = Frame(okno, bg = 'orange', height=400, width = 600)# PROSTOR ZA IZPIS ŽE VNESENIH PODATKOV
-prostor_za_podatke.grid(row=4, column=0, rowspan = 4, columnspan = 6, sticky = 'W')'''
 
 podatki_vozniki = Frame(okno, height = 200, width = 600)
 podatki_vozniki.grid(row=4, column=0, rowspan=2, columnspan=6, sticky = 'W')
@@ -94,13 +93,13 @@ panel.grid(row=0, column=6, columnspan = 7, rowspan = 4)
 prostor_za_sliko = Label(panel, image = slika).pack()
 
 
-prostor_za_gumb = Frame(okno, height=200, width = 700, bg = 'green')
+prostor_za_gumb = Frame(okno, height=200, width = 700)
 prostor_za_gumb.grid(row = 4, column = 6,rowspan = 2, columnspan = 7,sticky = 'N')
 
 
-prostor_za_odgovor = Frame(okno, height = 100, width = 700, bg = 'blue')
+prostor_za_odgovor = Frame(okno, height = 100, width = 700)
 prostor_za_odgovor.grid(row = 6, column = 6, columnspan = 7,sticky = 'N')
-ODGOVOR = Label(prostor_za_odgovor, text = 'Tukaj se bo pojavil odgovor')
+ODGOVOR = Label(prostor_za_odgovor, text = 'Tukaj se bo pojavil odgovor.', bg = 'lightsalmon', font = 'Helvetica 15')
 ODGOVOR.pack()
 
 
@@ -154,7 +153,7 @@ def vnesi_podatke_voznik():
     
 
 gumb_podatki_voznik = Button(prostor_za_vnos_voznik, text = 'Vnesi podatke', command = vnesi_podatke_voznik)
-gumb_podatki_voznik.grid(row = 4)
+gumb_podatki_voznik.grid(row = 5)
 
 
 Label(prostor_za_vnos_potnik, text = 'POTNIK').grid(row=0)
@@ -237,7 +236,7 @@ def simulacija(): #WHERE THE MAGIC HAPPENS
     
         
 
-GLAVNI_GUMB = Button(prostor_za_gumb, text = 'Zaženi simulacijo', command = simulacija)
+GLAVNI_GUMB = Button(prostor_za_gumb, text = 'ZAŽENI SIMULACIJO', command = simulacija, font = 'Helvetica 10 bold')
 GLAVNI_GUMB.grid(row = 0)
 
 def zbrisi():
@@ -247,7 +246,8 @@ def zbrisi():
     treeview_vozniki.delete(*treeview_vozniki.get_children())
     treeview_potniki.delete(*treeview_potniki.get_children())
     odgovor = ''
-    ODGOVOR.config(text = 'Tukaj se bo pojavil odgovor')
+    ODGOVOR.config(text = 'Tukaj se bo pojavil odgovor.')
+    NAPAKA.config(text = 'Tukaj se bodo izpisale napake.')
     
 gumb_zbrisi = Button(prostor_za_gumb, text = 'Zbriši vse podatke', command = zbrisi)
 gumb_zbrisi.grid(row=0, column = 1)
