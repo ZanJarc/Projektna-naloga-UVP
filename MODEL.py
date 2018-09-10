@@ -114,6 +114,12 @@ class Potnik:
     def __repr__(self):
         return 'Potnik({}, {}, {})'.format(self.ime, self.zacetek, self.konec)
 
+def lastnosti_voznik(Voznik):
+        return [Voznik.ime, Voznik.zacetek, Voznik.konec, Voznik.prostor]
+
+def lastnosti_potnik(Potnik):
+    return [Potnik.ime, Potnik.zacetek, Potnik.konec]
+    
 def najdi_pot(Omrezje, zacetek, konec, pot = None):
             if pot == None:
                 pot = []

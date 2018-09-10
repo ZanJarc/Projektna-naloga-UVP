@@ -39,9 +39,52 @@ prostor_za_vnos_potnik = Frame(VNOS)#PROSTOR ZA VNOS PODATKOV POTNIKOV
 prostor_za_vnos_potnik.grid(row=0, column=1)
 
 
-prostor_za_podatke = Frame(okno, bg = 'orange', height=400, width = 600)# PROSTOR ZA IZPIS ŽE VNESENIH PODATKOV
-prostor_za_podatke.grid(row=4, column=0, rowspan = 4, columnspan = 6, sticky = 'W')
-#stanje_vozniki = Frame(prostor_za_podatke).grid(row=0)
+'''prostor_za_podatke = Frame(okno, bg = 'orange', height=400, width = 600)# PROSTOR ZA IZPIS ŽE VNESENIH PODATKOV
+prostor_za_podatke.grid(row=4, column=0, rowspan = 4, columnspan = 6, sticky = 'W')'''
+
+podatki_vozniki = Frame(okno, height = 200, width = 600)
+podatki_vozniki.grid(row=4, column=0, rowspan=2, columnspan=6, sticky = 'W')
+Label(podatki_vozniki, text = 'VOZNIKI').pack()
+
+
+podatki_potniki = Frame(okno, height = 200, width = 600)
+podatki_potniki.grid(row = 6, column = 0, rowspan = 2, columnspan = 6, sticky = 'W')
+Label(podatki_potniki, text = 'POTNIKI').pack()
+
+#TUKAJ BOM NAREDIL TREEVIEW ZA VOZNIKE
+
+treeview_vozniki = ttk.Treeview(podatki_vozniki)
+treeview_vozniki.pack(side = 'left')
+treeview_vozniki.config(height = 3, columns = LASTNOSTI_VOZNIKI)
+treeview_vozniki['show'] = 'headings'
+
+for lastnost in LASTNOSTI_VOZNIKI:
+    treeview_vozniki.column(lastnost, width = 70, anchor = 'c')
+    treeview_vozniki.heading(lastnost, text = lastnost)
+
+drsnik_vozniki = ttk.Scrollbar(podatki_vozniki, orient="vertical", command=treeview_vozniki.yview)
+drsnik_vozniki.pack(side='right', fill='y')
+
+treeview_vozniki.configure(yscrollcommand=drsnik_vozniki.set)
+####
+#TUKAJ BOM NAREDIL TREEVIEW ZA POTNIKE
+treeview_potniki = ttk.Treeview(podatki_potniki)
+treeview_potniki.pack(side = 'left')
+treeview_potniki.config(height = 3, columns = LASTNOSTI_POTNIKI)
+treeview_potniki['show'] = 'headings'
+
+for lastnost in LASTNOSTI_POTNIKI:
+    treeview_potniki.column(lastnost, width = 70, anchor = 'c')
+    treeview_potniki.heading(lastnost, text = lastnost)
+
+drsnik_potniki = ttk.Scrollbar(podatki_potniki, orient="vertical", command=treeview_potniki.yview)
+drsnik_potniki.pack(side='right', fill='y')
+
+treeview_potniki.configure(yscrollcommand=drsnik_potniki.set)
+
+
+
+
 
 
 
@@ -100,8 +143,8 @@ def vnesi_podatke_voznik():
     elif vnos_voznik_konec.get() == vnos_voznik_zacetek.get():
         raise ValueError('Voznik ne more imeti enakega konca in zacetka!')
     else:
-        driver = MODEL.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
-        VOZNIKI.append(driver)
+        voznik = MODEL.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
+        treeview_vozniki.insert('', 'end', values = MODEL.lastnosti_voznik(voznik))
         vnos_voznik_ime.delete(0, END), vnos_voznik_zacetek.delete(0, END), vnos_voznik_konec.delete(0, END), vnos_voznik_prostor.delete(0, END)
    
     
@@ -139,8 +182,8 @@ def vnesi_podatke_potnik():
     elif vnos_potnik_konec.get() == vnos_potnik_zacetek.get():
         raise ValueError('Potnik ne more imeti enakega konca in zacetka!')
     else:
-        passenger = MODEL.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
-        POTNIKI.append(passenger)
+        potnik = MODEL.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
+        treeview_potniki.insert('', 'end', values = MODEL.lastnosti_potnik(potnik))
         vnos_potnik_ime.delete(0, END), vnos_potnik_zacetek.delete(0, END), vnos_potnik_konec.delete(0, END)
 
     
@@ -152,11 +195,7 @@ gumb_podatki_potnik.grid(row = 4)
 
 
 
-prostor_podatkov_voznikov = Label(prostor_za_podatke)
-prostor_podatkov_voznikov.pack()
 
-prostor_podatkov_potnikov = Label(prostor_za_podatke)
-prostor_podatkov_potnikov.pack()
 
 imena_potniki = []
 def simulacija(): #WHERE THE MAGIC HAPPENS
@@ -193,6 +232,8 @@ GLAVNI_GUMB.grid(row = 0)
 
 def zbrisi():
     POTNIKI = VOZNIKI = []
+    treeview_vozniki.delete(*treeview_vozniki.get_children())
+    treeview_potniki.delete(*treeview_potniki.get_children())
     
 gumb_zbrisi = Button(prostor_za_gumb, text = 'Zbriši vse podatke', command = zbrisi)
 gumb_zbrisi.grid(row=0, column = 1)
