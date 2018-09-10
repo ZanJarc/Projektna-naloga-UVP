@@ -30,30 +30,60 @@ SORTIRANO = {}
 
 
 
+VNOS = Frame(okno ,height=400, width = 600).grid(row=0, column=0, rowspan = 4, columnspan = 6, sticky = 'W')
 
-prostor_za_vnos_voznik = Frame(okno, borderwidth = 0)# PROSTOR ZA VNOS PODATKOV VOZNIKOV
-prostor_za_vnos_voznik.pack()
+prostor_za_vnos_voznik = Frame(VNOS)# PROSTOR ZA VNOS PODATKOV VOZNIKOV
+prostor_za_vnos_voznik.grid(row=0, column=0)
+
+prostor_za_vnos_potnik = Frame(VNOS)#PROSTOR ZA VNOS PODATKOV POTNIKOV
+prostor_za_vnos_potnik.grid(row=0, column=1)
+
+
+prostor_za_podatke = Frame(okno, bg = 'orange', height=400, width = 600)# PROSTOR ZA IZPIS ŽE VNESENIH PODATKOV
+prostor_za_podatke.grid(row=4, column=0, rowspan = 4, columnspan = 6, sticky = 'W')
+#stanje_vozniki = Frame(prostor_za_podatke).grid(row=0)
 
 
 
-Label(prostor_za_vnos_voznik, text = 'Ime').grid(row=0, sticky='W')
-Label(prostor_za_vnos_voznik, text = 'Zacetek').grid(row=1, sticky='W')
-Label(prostor_za_vnos_voznik, text = 'Konec').grid(row=2, sticky='W')
-Label(prostor_za_vnos_voznik, text = 'Prostor').grid(row=3, sticky='W')
+
+slika = ImageTk.PhotoImage(Image.open('Omrezje.gif'))
+panel = Frame(okno, height=400, width = 700)
+panel.grid(row=0, column=6, columnspan = 7, rowspan = 4)
+prostor_za_sliko = Label(panel, image = slika).pack()
+
+
+prostor_za_gumb = Frame(okno, height=200, width = 700, bg = 'green')
+prostor_za_gumb.grid(row = 4, column = 6,rowspan = 2, columnspan = 7,sticky = 'N')
+
+
+prostor_za_odgovor = Frame(okno, height = 100, width = 700, bg = 'blue')
+prostor_za_odgovor.grid(row = 6, column = 6, columnspan = 7,sticky = 'N')
+
+
+prostor_za_napake = Frame(okno, height = 50, width = 700, bg = 'red')
+prostor_za_napake.grid(row = 7, column = 6, columnspan = 7)
+
+
+Label(prostor_za_vnos_voznik, text = 'VOZNIK').grid(row=0)
+Label(prostor_za_vnos_voznik, text = 'Ime').grid(row=1, sticky='W')
+Label(prostor_za_vnos_voznik, text = 'Zacetek').grid(row=2, sticky='W')
+Label(prostor_za_vnos_voznik, text = 'Konec').grid(row=3, sticky='W')
+Label(prostor_za_vnos_voznik, text = 'Prostor').grid(row=4, sticky='W')
 
 vnos_voznik_ime = Entry(prostor_za_vnos_voznik, width = 21)
-vnos_voznik_ime.grid(row=0, column=1)
+vnos_voznik_ime.grid(row=1, column=1)
 
 vnos_voznik_zacetek = ttk.Combobox(prostor_za_vnos_voznik, width = 18)
 vnos_voznik_zacetek['values'] = Mesta
-vnos_voznik_zacetek.grid(row=1, column=1)
+vnos_voznik_zacetek.grid(row=2, column=1)
 
 vnos_voznik_konec = ttk.Combobox(prostor_za_vnos_voznik, width = 18)
 vnos_voznik_konec['values'] = Mesta
-vnos_voznik_konec.grid(row=2, column=1)
+
+vnos_voznik_konec.grid(row=3, column=1)
 
 vnos_voznik_prostor = Entry(prostor_za_vnos_voznik, width = 21)
-vnos_voznik_prostor.grid(row=3, column=1)
+vnos_voznik_prostor.grid(row=4, column=1)
 
 
 def vnesi_podatke_voznik():
@@ -79,24 +109,23 @@ def vnesi_podatke_voznik():
 gumb_podatki_voznik = Button(prostor_za_vnos_voznik, text = 'Vnesi podatke', command = vnesi_podatke_voznik)
 gumb_podatki_voznik.grid(row = 4)
 
-prostor_za_vnos_potnik = Frame(okno, borderwidth = 0)#PROSTOR ZA VNOS PODATKOV POTNIKOV
-prostor_za_vnos_potnik.pack()
 
-Label(prostor_za_vnos_potnik, text = 'Ime').grid(row=0, sticky='W')
-Label(prostor_za_vnos_potnik, text = 'Zacetek').grid(row=1, sticky='W')
-Label(prostor_za_vnos_potnik, text = 'Konec').grid(row=2, sticky='W')
+Label(prostor_za_vnos_potnik, text = 'POTNIK').grid(row=0)
+Label(prostor_za_vnos_potnik, text = 'Ime').grid(row=1, sticky='W')
+Label(prostor_za_vnos_potnik, text = 'Zacetek').grid(row=2, sticky='W')
+Label(prostor_za_vnos_potnik, text = 'Konec').grid(row=3, sticky='W')
 
 
 vnos_potnik_ime = Entry(prostor_za_vnos_potnik, width = 21)
-vnos_potnik_ime.grid(row=0, column=1)
+vnos_potnik_ime.grid(row=1, column=1)
 
 vnos_potnik_zacetek = ttk.Combobox(prostor_za_vnos_potnik, width = 18)
 vnos_potnik_zacetek['values'] = Mesta
-vnos_potnik_zacetek.grid(row=1, column=1)
+vnos_potnik_zacetek.grid(row=2, column=1)
 
 vnos_potnik_konec = ttk.Combobox(prostor_za_vnos_potnik, width = 18)
 vnos_potnik_konec['values'] = Mesta
-vnos_potnik_konec.grid(row=2, column=1)
+vnos_potnik_konec.grid(row=3, column=1)
 
 
 
@@ -121,8 +150,7 @@ gumb_podatki_potnik = Button(prostor_za_vnos_potnik, text = 'Vnesi podatke', com
 gumb_podatki_potnik.grid(row = 4)
 
 
-prostor_za_podatke = Frame(okno)# PROSTOR ZA IZPIS ŽE VNESENIH PODATKOV
-prostor_za_podatke.pack()
+
 
 prostor_podatkov_voznikov = Label(prostor_za_podatke)
 prostor_podatkov_voznikov.pack()
@@ -160,17 +188,16 @@ def simulacija(): #WHERE THE MAGIC HAPPENS
     
         
 
-GLAVNI_GUMB = Button(okno, text = 'Zaženi simulacijo', command = simulacija)
-GLAVNI_GUMB.pack()
+GLAVNI_GUMB = Button(prostor_za_gumb, text = 'Zaženi simulacijo', command = simulacija)
+GLAVNI_GUMB.grid(row = 0)
+
+def zbrisi():
+    POTNIKI = VOZNIKI = []
+    
+gumb_zbrisi = Button(prostor_za_gumb, text = 'Zbriši vse podatke', command = zbrisi)
+gumb_zbrisi.grid(row=0, column = 1)
 
 
-slika = ImageTk.PhotoImage(Image.open('Omrezje.gif'))
-panel = Label(okno, image = slika)
-panel.pack()
-
-
-prostor_za_odgovor = Label(okno, text = 'Tukaj se pojavi rešitev')
-prostor_za_odgovor.pack()
 
 
 okno.mainloop()
