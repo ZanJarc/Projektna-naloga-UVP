@@ -25,7 +25,6 @@ Mesta = Omrezje.mesta
 
 VOZNIKI = []
 POTNIKI = []
-
 SORTIRANO = {}
 
 
@@ -101,10 +100,14 @@ prostor_za_gumb.grid(row = 4, column = 6,rowspan = 2, columnspan = 7,sticky = 'N
 
 prostor_za_odgovor = Frame(okno, height = 100, width = 700, bg = 'blue')
 prostor_za_odgovor.grid(row = 6, column = 6, columnspan = 7,sticky = 'N')
+ODGOVOR = Label(prostor_za_odgovor, text = 'Tukaj se bo pojavil odgovor')
+ODGOVOR.pack()
 
 
-prostor_za_napake = Frame(okno, height = 50, width = 700, bg = 'red')
+prostor_za_napake = Frame(okno, height = 50, width = 700,)
 prostor_za_napake.grid(row = 7, column = 6, columnspan = 7)
+NAPAKA = Label(prostor_za_napake, text = 'Tukaj se bodo izpisale napake.', fg = 'red',font='Helvetica 10 bold')
+NAPAKA.pack()
 
 
 Label(prostor_za_vnos_voznik, text = 'VOZNIK').grid(row=0)
@@ -131,22 +134,23 @@ vnos_voznik_prostor.grid(row=4, column=1)
 
 def vnesi_podatke_voznik():
     if len(vnos_voznik_ime.get()) == 0:
-        raise ValueError('Vsak voznik potrebuje ime!')
+        NAPAKA.config(text = 'Vsak voznik potrebuje ime!')
     elif len(vnos_voznik_zacetek.get()) == 0:
-        raise ValueError('Vsak voznik potrebuje zacetek!')
+        NAPAKA.config(text ='Vsak voznik potrebuje zacetek!')
     elif len(vnos_voznik_konec.get()) == 0:
-        raise ValueError('Vsak voznik potrebuje konec!')
+        NAPAKA.config(text ='Vsak voznik potrebuje konec!')
     elif len(vnos_voznik_prostor.get()) == 0 or int(vnos_voznik_prostor.get()) <= 0:
-        raise ValueError('Vsak voznik potrebuje prostor!')
+        NAPAKA.config(text ='Vsak voznik potrebuje prostor!')
     elif not vnos_voznik_prostor.get().isnumeric():
-        raise ValueError('Vnešeni podatek pri prostoru ni številka!')
+        NAPAKA.config(text ='Vnešeni podatek pri prostoru ni številka!')
     elif vnos_voznik_konec.get() == vnos_voznik_zacetek.get():
-        raise ValueError('Voznik ne more imeti enakega konca in zacetka!')
+        NAPAKA.config(text ='Voznik ne more imeti enakega konca in zacetka!')
     else:
         voznik = MODEL.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
         treeview_vozniki.insert('', 'end', values = MODEL.lastnosti_voznik(voznik))
+        VOZNIKI.append(voznik)
         vnos_voznik_ime.delete(0, END), vnos_voznik_zacetek.delete(0, END), vnos_voznik_konec.delete(0, END), vnos_voznik_prostor.delete(0, END)
-   
+        NAPAKA.config(text = 'Tukaj se bodo izpisale napake.')
     
 
 gumb_podatki_voznik = Button(prostor_za_vnos_voznik, text = 'Vnesi podatke', command = vnesi_podatke_voznik)
@@ -174,18 +178,19 @@ vnos_potnik_konec.grid(row=3, column=1)
 
 def vnesi_podatke_potnik():
     if len(vnos_potnik_ime.get()) == 0:
-        raise ValueError('Vsak potnik potrebuje ime!')
+        NAPAKA.config(text = 'Vsak potnik potrebuje ime!')
     elif len(vnos_potnik_zacetek.get()) == 0:
-        raise ValueError('Vsak potnik potrebuje zacetek!')
+        NAPAKA.config(text = 'Vsak potnik potrebuje zacetek!')
     elif len(vnos_potnik_konec.get()) == 0:
-        raise ValueError('Vsak potnik potrebuje konec!')
+        NAPAKA.config(text = 'Vsak potnik potrebuje konec!')
     elif vnos_potnik_konec.get() == vnos_potnik_zacetek.get():
-        raise ValueError('Potnik ne more imeti enakega konca in zacetka!')
+        NAPAKA.config(text = 'Potnik ne more imeti enakega konca in zacetka!')
     else:
         potnik = MODEL.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
         treeview_potniki.insert('', 'end', values = MODEL.lastnosti_potnik(potnik))
+        POTNIKI.append(potnik)
         vnos_potnik_ime.delete(0, END), vnos_potnik_zacetek.delete(0, END), vnos_potnik_konec.delete(0, END)
-
+        NAPAKA.config(text = 'Tukaj se bodo izpisale napake.')
     
     
 
@@ -197,32 +202,37 @@ gumb_podatki_potnik.grid(row = 4)
 
 
 
-imena_potniki = []
-def simulacija(): #WHERE THE MAGIC HAPPENS
-    for voznik in VOZNIKI:
-        for potnik in POTNIKI:
-            if MODEL.ali_se_lahko_peljeta(Omrezje, voznik, potnik):
-                ### voznik lahko pelje potnika; mu je na poti in se nima zasedenega avtomobila
-                MODEL.pelje(Omrezje, voznik, potnik)
-                POTNIKI.remove(potnik) ### ta potnik je dobil svoj prevoz
-                if voznik not in SORTIRANO:
-                    SORTIRANO[voznik] = []
-                    SORTIRANO[voznik].append(potnik)
-                else:
-                    SORTIRANO[voznik].append(potnik)
-    for voznik in VOZNIKI:
-        if voznik not in SORTIRANO: ###to pomeni, da na poti ne pobere nikogar
-            print('{} se pelje sam'.format(voznik.ime))
-        else:
-            tekst = '{} pelje'.format(voznik.ime)
-            for potnik in SORTIRANO[voznik]:
-                  tekst += ' {}, '.format(potnik.ime)
 
-            tekst = tekst[:-2]
-            tekst += '.'
-            print(tekst)
-    for potnik in POTNIKI: ## tukaj ostanejo tisti, ki ne dobijo prevoza
-        print('{} ni dobil prevoza'.format(potnik.ime))
+def simulacija(): #WHERE THE MAGIC HAPPENS
+    if VOZNIKI == [] and POTNIKI == []:
+        NAPAKA.config(text = 'Prosim vstavite podatke')
+    else:
+        NAPAKA.config(text = 'Tukaj se bodo izpisale napake.')
+        for voznik in VOZNIKI:
+            for potnik in POTNIKI:
+                if MODEL.ali_se_lahko_peljeta(Omrezje, voznik, potnik):
+                    ### voznik lahko pelje potnika; mu je na poti in se nima zasedenega avtomobila
+                    MODEL.pelje(Omrezje, voznik, potnik)
+                    POTNIKI.remove(potnik) ### ta potnik je dobil svoj prevoz
+                    if voznik not in SORTIRANO:
+                        SORTIRANO[voznik] = []
+                        SORTIRANO[voznik].append(potnik)
+                    else:
+                        SORTIRANO[voznik].append(potnik)
+        odgovor = ''
+        for voznik in VOZNIKI:
+            if voznik not in SORTIRANO: ###to pomeni, da na poti ne pobere nikogar
+                odgovor += '{} se pelje sam.\n'.format(voznik.ime)
+            else:
+                odgovor += '{} pelje'.format(voznik.ime)
+                for potnik in SORTIRANO[voznik]:
+                      odgovor += ' {}, '.format(potnik.ime)
+
+                odgovor = odgovor[:-2]
+                odgovor += '.\n'
+        for potnik in POTNIKI: ## tukaj ostanejo tisti, ki ne dobijo prevoza
+            odgovor +='{} ni dobil prevoza.\n'.format(potnik.ime)
+        ODGOVOR.config(text = odgovor) ### s tem se izpise dobljena informacija
                 
     
         
@@ -231,9 +241,13 @@ GLAVNI_GUMB = Button(prostor_za_gumb, text = 'Zaženi simulacijo', command = sim
 GLAVNI_GUMB.grid(row = 0)
 
 def zbrisi():
-    POTNIKI = VOZNIKI = []
+    POTNIKI.clear()
+    VOZNIKI.clear()
+    SORTIRANO.clear
     treeview_vozniki.delete(*treeview_vozniki.get_children())
     treeview_potniki.delete(*treeview_potniki.get_children())
+    odgovor = ''
+    ODGOVOR.config(text = 'Tukaj se bo pojavil odgovor')
     
 gumb_zbrisi = Button(prostor_za_gumb, text = 'Zbriši vse podatke', command = zbrisi)
 gumb_zbrisi.grid(row=0, column = 1)
