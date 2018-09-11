@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from PIL import ImageTk, Image
-import model
+import MODEL
 okno = Tk()
 okno.title('Vmesnik')
 
@@ -20,7 +20,7 @@ graf = {'LJUBLJANA' : ['CELJE', 'KRANJ', 'KOPER', 'NOVO MESTO'],
 'JESENICE' : ['KRANJ']
 }
 
-Omrezje = model.Omrezje(graf)
+Omrezje = MODEL.Omrezje(graf)
 Mesta = Omrezje.mesta
 
 
@@ -170,8 +170,8 @@ def vnesi_podatke_voznik():
     elif vnos_voznik_konec.get() == vnos_voznik_zacetek.get():
         napaka.config(text ='Voznik ne more imeti enakega konca in zacetka!')
     else:
-        voznik = model.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
-        treeview_vozniki.insert('', 'end', values = model.lastnosti_voznik(voznik))
+        voznik = MODEL.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
+        treeview_vozniki.insert('', 'end', values = MODEL.lastnosti_voznik(voznik))
         VOZNIKI.append(voznik)
         vnos_voznik_ime.delete(0, END), vnos_voznik_zacetek.delete(0, END), vnos_voznik_konec.delete(0, END), vnos_voznik_prostor.delete(0, END)
         napaka.config(text = 'Tukaj se bodo izpisale napake.')
@@ -210,8 +210,8 @@ def vnesi_podatke_potnik():
     elif vnos_potnik_konec.get() == vnos_potnik_zacetek.get():
         napaka.config(text = 'Potnik ne more imeti enakega konca in zacetka!')
     else:
-        potnik = model.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
-        treeview_potniki.insert('', 'end', values = model.lastnosti_potnik(potnik))
+        potnik = MODEL.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
+        treeview_potniki.insert('', 'end', values = MODEL.lastnosti_potnik(potnik))
         POTNIKI.append(potnik)
         vnos_potnik_ime.delete(0, END), vnos_potnik_zacetek.delete(0, END), vnos_potnik_konec.delete(0, END)
         napaka.config(text = 'Tukaj se bodo izpisale napake.')
@@ -235,9 +235,9 @@ def simulacija(): #WHERE THE MAGIC HAPPENS
         napaka.config(text = 'Tukaj se bodo izpisale napake.')
         for voznik in VOZNIKI:
             for potnik in POTNIKI:
-                if model.ali_se_lahko_peljeta(Omrezje, voznik, potnik):
+                if MODEL.ali_se_lahko_peljeta(Omrezje, voznik, potnik):
                     ### voznik lahko pelje potnika; mu je na poti in se nima zasedenega avtomobila
-                    model.pelje(Omrezje, voznik, potnik)
+                    MODEL.pelje(Omrezje, voznik, potnik)
                     POTNIKI.remove(potnik) ### ta potnik je dobil svoj prevoz
                     if voznik not in SORTIRANO:
                         SORTIRANO[voznik] = []
