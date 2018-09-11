@@ -2,12 +2,13 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from PIL import ImageTk, Image
-import MODEL
+import model
 okno = Tk()
 okno.title('Vmesnik')
 
 LASTNOSTI_VOZNIKI = ['Ime', 'Začetek', 'Konec', 'Prostor']
 LASTNOSTI_POTNIKI = ['Ime', 'Začetek', 'Konec']
+LASTNOSTI_ODGOVOR = ['Zaporedna številka', 'Stavek']
 
 graf = {'LJUBLJANA' : ['CELJE', 'KRANJ', 'KOPER', 'NOVO MESTO'], 
 'CELJE' : ['MARIBOR', 'LJUBLJANA'], 
@@ -19,7 +20,7 @@ graf = {'LJUBLJANA' : ['CELJE', 'KRANJ', 'KOPER', 'NOVO MESTO'],
 'JESENICE' : ['KRANJ']
 }
 
-Omrezje = MODEL.Omrezje(graf)
+Omrezje = model.Omrezje(graf)
 Mesta = Omrezje.mesta
 
 
@@ -37,7 +38,33 @@ prostor_za_vnos_voznik.grid(row=0, column=0)
 prostor_za_vnos_potnik = Frame(VNOS)#PROSTOR ZA VNOS PODATKOV POTNIKOV
 prostor_za_vnos_potnik.grid(row=0, column=1)
 
+
+prostor_za_odgovor = Frame(okno, height = 100, width = 700)
+prostor_za_odgovor.grid(row = 6, column = 6, columnspan = 7,sticky = 'N')
+
+
+
 ###TUKAJ BOM NAREDIL TREEVIEW ZA ODGOVORE
+treeview_odgovor = ttk.Treeview(prostor_za_odgovor)
+treeview_odgovor.pack(side = 'left')
+treeview_odgovor.config(height = 5)
+
+treeview_odgovor.config(columns = LASTNOSTI_ODGOVOR)
+treeview_odgovor['show'] = 'headings'
+    
+
+treeview_odgovor.column('Zaporedna številka', width = 110, anchor = 'center')
+treeview_odgovor.heading('Zaporedna številka', text = 'Zaporedna številka')
+treeview_odgovor.column('Stavek', width = 500, anchor = 'center')
+treeview_odgovor.heading('Stavek', text = 'Stavek')
+    
+    
+
+
+drsnik_odgovor = ttk.Scrollbar(prostor_za_odgovor, orient="vertical", command=treeview_odgovor.yview)
+drsnik_odgovor.pack(side='right', fill='y')
+treeview_odgovor.configure(yscrollcommand=drsnik_odgovor.set)
+####
 
 
 podatki_vozniki = Frame(okno, height = 200, width = 600)
@@ -57,7 +84,7 @@ treeview_vozniki.config(height = 3, columns = LASTNOSTI_VOZNIKI)
 treeview_vozniki['show'] = 'headings'
 
 for lastnost in LASTNOSTI_VOZNIKI:
-    treeview_vozniki.column(lastnost, width = 70, anchor = 'c')
+    treeview_vozniki.column(lastnost, width = 140, anchor = 'c')
     treeview_vozniki.heading(lastnost, text = lastnost)
 
 drsnik_vozniki = ttk.Scrollbar(podatki_vozniki, orient="vertical", command=treeview_vozniki.yview)
@@ -65,6 +92,7 @@ drsnik_vozniki.pack(side='right', fill='y')
 
 treeview_vozniki.configure(yscrollcommand=drsnik_vozniki.set)
 ####
+
 #TUKAJ BOM NAREDIL TREEVIEW ZA POTNIKE
 treeview_potniki = ttk.Treeview(podatki_potniki)
 treeview_potniki.pack(side = 'left')
@@ -72,13 +100,14 @@ treeview_potniki.config(height = 3, columns = LASTNOSTI_POTNIKI)
 treeview_potniki['show'] = 'headings'
 
 for lastnost in LASTNOSTI_POTNIKI:
-    treeview_potniki.column(lastnost, width = 70, anchor = 'c')
+    treeview_potniki.column(lastnost, width = 186, anchor = 'c')
     treeview_potniki.heading(lastnost, text = lastnost)
 
 drsnik_potniki = ttk.Scrollbar(podatki_potniki, orient="vertical", command=treeview_potniki.yview)
 drsnik_potniki.pack(side='right', fill='y')
 
 treeview_potniki.configure(yscrollcommand=drsnik_potniki.set)
+###
 
 
 
@@ -97,16 +126,12 @@ prostor_za_gumb = Frame(okno, height=200, width = 700)
 prostor_za_gumb.grid(row = 4, column = 6,rowspan = 2, columnspan = 7,sticky = 'N')
 
 
-prostor_za_odgovor = Frame(okno, height = 100, width = 700)
-prostor_za_odgovor.grid(row = 6, column = 6, columnspan = 7,sticky = 'N')
-ODGOVOR = Label(prostor_za_odgovor, text = 'Tukaj se bo pojavil odgovor.', bg = 'lightsalmon', font = 'Helvetica 15')
-ODGOVOR.pack()
 
 
 prostor_za_napake = Frame(okno, height = 50, width = 700,)
 prostor_za_napake.grid(row = 7, column = 6, columnspan = 7)
-NAPAKA = Label(prostor_za_napake, text = 'Tukaj se bodo izpisale napake.', fg = 'red',font='Helvetica 10 bold')
-NAPAKA.pack()
+napaka = Label(prostor_za_napake, text = 'Tukaj se bodo izpisale napake.', fg = 'red',font='Helvetica 10 bold')
+napaka.pack()
 
 
 Label(prostor_za_vnos_voznik, text = 'VOZNIK').grid(row=0)
@@ -133,23 +158,23 @@ vnos_voznik_prostor.grid(row=4, column=1)
 
 def vnesi_podatke_voznik():
     if len(vnos_voznik_ime.get()) == 0:
-        NAPAKA.config(text = 'Vsak voznik potrebuje ime!')
+        napaka.config(text = 'Vsak voznik potrebuje ime!')
     elif len(vnos_voznik_zacetek.get()) == 0:
-        NAPAKA.config(text ='Vsak voznik potrebuje zacetek!')
+        napaka.config(text ='Vsak voznik potrebuje zacetek!')
     elif len(vnos_voznik_konec.get()) == 0:
-        NAPAKA.config(text ='Vsak voznik potrebuje konec!')
+        napaka.config(text ='Vsak voznik potrebuje konec!')
     elif len(vnos_voznik_prostor.get()) == 0 or int(vnos_voznik_prostor.get()) <= 0:
-        NAPAKA.config(text ='Vsak voznik potrebuje prostor!')
+        napaka.config(text ='Vsak voznik potrebuje prostor!')
     elif not vnos_voznik_prostor.get().isnumeric():
-        NAPAKA.config(text ='Vnešeni podatek pri prostoru ni številka!')
+        napaka.config(text ='Vnešeni podatek pri prostoru ni številka!')
     elif vnos_voznik_konec.get() == vnos_voznik_zacetek.get():
-        NAPAKA.config(text ='Voznik ne more imeti enakega konca in zacetka!')
+        napaka.config(text ='Voznik ne more imeti enakega konca in zacetka!')
     else:
-        voznik = MODEL.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
-        treeview_vozniki.insert('', 'end', values = MODEL.lastnosti_voznik(voznik))
+        voznik = model.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
+        treeview_vozniki.insert('', 'end', values = model.lastnosti_voznik(voznik))
         VOZNIKI.append(voznik)
         vnos_voznik_ime.delete(0, END), vnos_voznik_zacetek.delete(0, END), vnos_voznik_konec.delete(0, END), vnos_voznik_prostor.delete(0, END)
-        NAPAKA.config(text = 'Tukaj se bodo izpisale napake.')
+        napaka.config(text = 'Tukaj se bodo izpisale napake.')
     
 
 gumb_podatki_voznik = Button(prostor_za_vnos_voznik, text = 'Vnesi podatke', command = vnesi_podatke_voznik)
@@ -177,19 +202,19 @@ vnos_potnik_konec.grid(row=3, column=1)
 
 def vnesi_podatke_potnik():
     if len(vnos_potnik_ime.get()) == 0:
-        NAPAKA.config(text = 'Vsak potnik potrebuje ime!')
+        napaka.config(text = 'Vsak potnik potrebuje ime!')
     elif len(vnos_potnik_zacetek.get()) == 0:
-        NAPAKA.config(text = 'Vsak potnik potrebuje zacetek!')
+        napaka.config(text = 'Vsak potnik potrebuje zacetek!')
     elif len(vnos_potnik_konec.get()) == 0:
-        NAPAKA.config(text = 'Vsak potnik potrebuje konec!')
+        napaka.config(text = 'Vsak potnik potrebuje konec!')
     elif vnos_potnik_konec.get() == vnos_potnik_zacetek.get():
-        NAPAKA.config(text = 'Potnik ne more imeti enakega konca in zacetka!')
+        napaka.config(text = 'Potnik ne more imeti enakega konca in zacetka!')
     else:
-        potnik = MODEL.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
-        treeview_potniki.insert('', 'end', values = MODEL.lastnosti_potnik(potnik))
+        potnik = model.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
+        treeview_potniki.insert('', 'end', values = model.lastnosti_potnik(potnik))
         POTNIKI.append(potnik)
         vnos_potnik_ime.delete(0, END), vnos_potnik_zacetek.delete(0, END), vnos_potnik_konec.delete(0, END)
-        NAPAKA.config(text = 'Tukaj se bodo izpisale napake.')
+        napaka.config(text = 'Tukaj se bodo izpisale napake.')
     
     
 
@@ -203,15 +228,16 @@ gumb_podatki_potnik.grid(row = 4)
 
 
 def simulacija(): #WHERE THE MAGIC HAPPENS
+    i = 1
     if VOZNIKI == [] and POTNIKI == []:
-        NAPAKA.config(text = 'Prosim vstavite podatke')
+        napaka.config(text = 'Prosim vstavite podatke!')
     else:
-        NAPAKA.config(text = 'Tukaj se bodo izpisale napake.')
+        napaka.config(text = 'Tukaj se bodo izpisale napake.')
         for voznik in VOZNIKI:
             for potnik in POTNIKI:
-                if MODEL.ali_se_lahko_peljeta(Omrezje, voznik, potnik):
+                if model.ali_se_lahko_peljeta(Omrezje, voznik, potnik):
                     ### voznik lahko pelje potnika; mu je na poti in se nima zasedenega avtomobila
-                    MODEL.pelje(Omrezje, voznik, potnik)
+                    model.pelje(Omrezje, voznik, potnik)
                     POTNIKI.remove(potnik) ### ta potnik je dobil svoj prevoz
                     if voznik not in SORTIRANO:
                         SORTIRANO[voznik] = []
@@ -221,17 +247,27 @@ def simulacija(): #WHERE THE MAGIC HAPPENS
         odgovor = ''
         for voznik in VOZNIKI:
             if voznik not in SORTIRANO: ###to pomeni, da na poti ne pobere nikogar
-                odgovor += '{} se pelje sam.\n'.format(voznik.ime)
+                odgovor += '{} se pelje sam.'.format(voznik.ime)
+                treeview_odgovor.insert('', 'end', values = (i, odgovor))
+                odgovor = ''
+                i+=1
             else:
                 odgovor += '{} pelje'.format(voznik.ime)
                 for potnik in SORTIRANO[voznik]:
                       odgovor += ' {}, '.format(potnik.ime)
 
                 odgovor = odgovor[:-2]
-                odgovor += '.\n'
+                odgovor += '.'
+                treeview_odgovor.insert('', 'end', values = (i, odgovor))
+                odgovor = ''
+                i+=1
+                                        
+                
         for potnik in POTNIKI: ## tukaj ostanejo tisti, ki ne dobijo prevoza
             odgovor +='{} ni dobil prevoza.\n'.format(potnik.ime)
-        ODGOVOR.config(text = odgovor) ### s tem se izpise dobljena informacija
+            treeview_odgovor.insert('', 'end', values = (i, odgovor))
+            odgovor = ''
+            i += 1
                 
     
         
@@ -245,9 +281,9 @@ def zbrisi():
     SORTIRANO.clear
     treeview_vozniki.delete(*treeview_vozniki.get_children())
     treeview_potniki.delete(*treeview_potniki.get_children())
+    treeview_odgovor.delete(*treeview_odgovor.get_children())
     odgovor = ''
-    ODGOVOR.config(text = 'Tukaj se bo pojavil odgovor.')
-    NAPAKA.config(text = 'Tukaj se bodo izpisale napake.')
+    napaka.config(text = 'Tukaj se bodo izpisale napake.')
     
 gumb_zbrisi = Button(prostor_za_gumb, text = 'Zbriši vse podatke', command = zbrisi)
 gumb_zbrisi.grid(row=0, column = 1)
