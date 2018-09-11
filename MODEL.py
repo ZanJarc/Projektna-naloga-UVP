@@ -81,24 +81,6 @@ class Omrezje:
     def __repr__(self):
         return 'Omrezje({})'.format(self.slovar_grafa)
 
-    '''def najdi_pot(self, zacetek, konec, pot = None):
-        """ find a path from start_vertex to end_vertex 
-            in graph """
-        if pot == None:
-            pot = []
-        graf = self.slovar_grafa
-        pot = pot + [zacetek]
-        if zacetek == konec:
-            return pot
-        if zacetek not in graf:
-            return None
-        for mesto in graf[zacetek]:
-            if mesto not in pot:
-                podaljsana_pot = self.najdi_pot(mesto, konec, pot)
-                if podaljsana_pot: 
-                    return podaljsana_pot
-        return None'''
-
 
 class Potnik:
 

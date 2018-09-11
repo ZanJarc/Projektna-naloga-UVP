@@ -227,7 +227,7 @@ gumb_podatki_potnik.grid(row = 4)
 
 def simulacija(): #WHERE THE MAGIC HAPPENS
     treeview_odgovor.delete(*treeview_odgovor.get_children())
-    i = 1
+    odgovor_stevec = 1
     if model.vozniki == [] and model.potniki == []:
         napaka.config(text = 'Prosim vstavite podatke!')
     else:
@@ -237,10 +237,9 @@ def simulacija(): #WHERE THE MAGIC HAPPENS
         for voznik in model.vozniki:
             if voznik not in model.sortirano: ###to pomeni, da na poti ne pobere nikogar
                 odgovor += '{} se pelje sam.'.format(voznik.ime)
-                print(odgovor)
-                treeview_odgovor.insert('', 'end', values = (i, odgovor))
+                treeview_odgovor.insert('', 'end', values = (odgovor_stevec, odgovor))
                 odgovor = ''
-                i+=1
+                odgovor_stevec += 1
             else:
                 odgovor += '{} pelje'.format(voznik.ime)
                 for potnik in model.sortirano[voznik]:
@@ -248,17 +247,16 @@ def simulacija(): #WHERE THE MAGIC HAPPENS
 
                 odgovor = odgovor[:-2]
                 odgovor += '.'
-                treeview_odgovor.insert('', 'end', values = (i, odgovor))
-                print(odgovor)
+                treeview_odgovor.insert('', 'end', values = (odgovor_stevec, odgovor))
                 odgovor = ''
-                i+=1
+                odgovor_stevec += 1
                                         
                 
         for potnik in model.potniki: ## tukaj ostanejo tisti, ki ne dobijo prevoza
             odgovor +='{} ni dobil prevoza.\n'.format(potnik.ime)
-            treeview_odgovor.insert('', 'end', values = (i, odgovor))
+            treeview_odgovor.insert('', 'end', values = (odgovor_stevec, odgovor))
             odgovor = ''
-            i += 1
+            odgovor_stevec += 1
                 
     
         
