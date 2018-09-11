@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from PIL import ImageTk, Image
-import MODEL
+import model
 okno = Tk()
 okno.title('Vmesnik')
 
@@ -20,22 +20,20 @@ graf = {'LJUBLJANA' : ['CELJE', 'KRANJ', 'KOPER', 'NOVO MESTO'],
 'JESENICE' : ['KRANJ']
 }
 
-Omrezje = MODEL.Omrezje(graf)
-Mesta = Omrezje.mesta
-
-
-VOZNIKI = []
-POTNIKI = []
-SORTIRANO = {}
+omrezje = model.Omrezje(graf)
+mesta = omrezje.mesta
 
 
 
-VNOS = Frame(okno ,height=400, width = 600).grid(row=0, column=0, rowspan = 4, columnspan = 6, sticky = 'W')
 
-prostor_za_vnos_voznik = Frame(VNOS)# PROSTOR ZA VNOS PODATKOV VOZNIKOV
+
+
+vnos = Frame(okno ,height=400, width = 600).grid(row=0, column=0, rowspan = 4, columnspan = 6, sticky = 'W')
+
+prostor_za_vnos_voznik = Frame(vnos)# PROSTOR ZA VNOS PODATKOV VOZNIKOV
 prostor_za_vnos_voznik.grid(row=0, column=0)
 
-prostor_za_vnos_potnik = Frame(VNOS)#PROSTOR ZA VNOS PODATKOV POTNIKOV
+prostor_za_vnos_potnik = Frame(vnos)#PROSTOR ZA VNOS PODATKOV POTNIKOV
 prostor_za_vnos_potnik.grid(row=0, column=1)
 
 
@@ -144,11 +142,11 @@ vnos_voznik_ime = Entry(prostor_za_vnos_voznik, width = 21)
 vnos_voznik_ime.grid(row=1, column=1)
 
 vnos_voznik_zacetek = ttk.Combobox(prostor_za_vnos_voznik, width = 18)
-vnos_voznik_zacetek['values'] = Mesta
+vnos_voznik_zacetek['values'] = mesta
 vnos_voznik_zacetek.grid(row=2, column=1)
 
 vnos_voznik_konec = ttk.Combobox(prostor_za_vnos_voznik, width = 18)
-vnos_voznik_konec['values'] = Mesta
+vnos_voznik_konec['values'] = mesta
 
 vnos_voznik_konec.grid(row=3, column=1)
 
@@ -170,9 +168,9 @@ def vnesi_podatke_voznik():
     elif vnos_voznik_konec.get() == vnos_voznik_zacetek.get():
         napaka.config(text ='Voznik ne more imeti enakega konca in zacetka!')
     else:
-        voznik = MODEL.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
-        treeview_vozniki.insert('', 'end', values = MODEL.lastnosti_voznik(voznik))
-        VOZNIKI.append(voznik)
+        voznik = model.Voznik(vnos_voznik_ime.get(), vnos_voznik_zacetek.get(), vnos_voznik_konec.get(), vnos_voznik_prostor.get())
+        treeview_vozniki.insert('', 'end', values = model.lastnosti_voznik(voznik))
+        model.vozniki.append(voznik)
         vnos_voznik_ime.delete(0, END), vnos_voznik_zacetek.delete(0, END), vnos_voznik_konec.delete(0, END), vnos_voznik_prostor.delete(0, END)
         napaka.config(text = 'Tukaj se bodo izpisale napake.')
     
@@ -191,11 +189,11 @@ vnos_potnik_ime = Entry(prostor_za_vnos_potnik, width = 21)
 vnos_potnik_ime.grid(row=1, column=1)
 
 vnos_potnik_zacetek = ttk.Combobox(prostor_za_vnos_potnik, width = 18)
-vnos_potnik_zacetek['values'] = Mesta
+vnos_potnik_zacetek['values'] = mesta
 vnos_potnik_zacetek.grid(row=2, column=1)
 
 vnos_potnik_konec = ttk.Combobox(prostor_za_vnos_potnik, width = 18)
-vnos_potnik_konec['values'] = Mesta
+vnos_potnik_konec['values'] = mesta
 vnos_potnik_konec.grid(row=3, column=1)
 
 
@@ -210,9 +208,9 @@ def vnesi_podatke_potnik():
     elif vnos_potnik_konec.get() == vnos_potnik_zacetek.get():
         napaka.config(text = 'Potnik ne more imeti enakega konca in zacetka!')
     else:
-        potnik = MODEL.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
-        treeview_potniki.insert('', 'end', values = MODEL.lastnosti_potnik(potnik))
-        POTNIKI.append(potnik)
+        potnik = model.Potnik(vnos_potnik_ime.get(), vnos_potnik_zacetek.get(), vnos_potnik_konec.get())
+        treeview_potniki.insert('', 'end', values = model.lastnosti_potnik(potnik))
+        model.potniki.append(potnik)
         vnos_potnik_ime.delete(0, END), vnos_potnik_zacetek.delete(0, END), vnos_potnik_konec.delete(0, END)
         napaka.config(text = 'Tukaj se bodo izpisale napake.')
     
@@ -228,42 +226,35 @@ gumb_podatki_potnik.grid(row = 4)
 
 
 def simulacija(): #WHERE THE MAGIC HAPPENS
+    treeview_odgovor.delete(*treeview_odgovor.get_children())
     i = 1
-    if VOZNIKI == [] and POTNIKI == []:
+    if model.vozniki == [] and model.potniki == []:
         napaka.config(text = 'Prosim vstavite podatke!')
     else:
         napaka.config(text = 'Tukaj se bodo izpisale napake.')
-        for voznik in VOZNIKI:
-            for potnik in POTNIKI:
-                if MODEL.ali_se_lahko_peljeta(Omrezje, voznik, potnik):
-                    ### voznik lahko pelje potnika; mu je na poti in se nima zasedenega avtomobila
-                    MODEL.pelje(Omrezje, voznik, potnik)
-                    POTNIKI.remove(potnik) ### ta potnik je dobil svoj prevoz
-                    if voznik not in SORTIRANO:
-                        SORTIRANO[voznik] = []
-                        SORTIRANO[voznik].append(potnik)
-                    else:
-                        SORTIRANO[voznik].append(potnik)
+        model.prepelji(omrezje, model.vozniki, model.potniki) ###v modelu se lepo vse sortira
         odgovor = ''
-        for voznik in VOZNIKI:
-            if voznik not in SORTIRANO: ###to pomeni, da na poti ne pobere nikogar
+        for voznik in model.vozniki:
+            if voznik not in model.sortirano: ###to pomeni, da na poti ne pobere nikogar
                 odgovor += '{} se pelje sam.'.format(voznik.ime)
+                print(odgovor)
                 treeview_odgovor.insert('', 'end', values = (i, odgovor))
                 odgovor = ''
                 i+=1
             else:
                 odgovor += '{} pelje'.format(voznik.ime)
-                for potnik in SORTIRANO[voznik]:
+                for potnik in model.sortirano[voznik]:
                       odgovor += ' {}, '.format(potnik.ime)
 
                 odgovor = odgovor[:-2]
                 odgovor += '.'
                 treeview_odgovor.insert('', 'end', values = (i, odgovor))
+                print(odgovor)
                 odgovor = ''
                 i+=1
                                         
                 
-        for potnik in POTNIKI: ## tukaj ostanejo tisti, ki ne dobijo prevoza
+        for potnik in model.potniki: ## tukaj ostanejo tisti, ki ne dobijo prevoza
             odgovor +='{} ni dobil prevoza.\n'.format(potnik.ime)
             treeview_odgovor.insert('', 'end', values = (i, odgovor))
             odgovor = ''
@@ -272,13 +263,13 @@ def simulacija(): #WHERE THE MAGIC HAPPENS
     
         
 
-GLAVNI_GUMB = Button(prostor_za_gumb, text = 'ZAŽENI SIMULACIJO', command = simulacija, font = 'Helvetica 10 bold')
-GLAVNI_GUMB.grid(row = 0)
+glavni_gumb = Button(prostor_za_gumb, text = 'ZAŽENI SIMULACIJO', command = simulacija, font = 'Helvetica 10 bold')
+glavni_gumb.grid(row = 0)
 
 def zbrisi():
-    POTNIKI.clear()
-    VOZNIKI.clear()
-    SORTIRANO.clear
+    model.potniki.clear()
+    model.vozniki.clear()
+    model.sortirano.clear
     treeview_vozniki.delete(*treeview_vozniki.get_children())
     treeview_potniki.delete(*treeview_potniki.get_children())
     treeview_odgovor.delete(*treeview_odgovor.get_children())

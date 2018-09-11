@@ -114,16 +114,16 @@ class Potnik:
     def __repr__(self):
         return 'Potnik({}, {}, {})'.format(self.ime, self.zacetek, self.konec)
 
-def lastnosti_voznik(Voznik):
-        return [Voznik.ime, Voznik.zacetek, Voznik.konec, Voznik.prostor]
+def lastnosti_voznik(voznik):
+        return [voznik.ime, voznik.zacetek, voznik.konec, voznik.prostor]
 
-def lastnosti_potnik(Potnik):
-    return [Potnik.ime, Potnik.zacetek, Potnik.konec]
+def lastnosti_potnik(potnik):
+    return [potnik.ime, potnik.zacetek, potnik.konec]
     
-def najdi_pot(Omrezje, zacetek, konec, pot = None):
+def najdi_pot(omrezje, zacetek, konec, pot = None):
             if pot == None:
                 pot = []
-            graf = Omrezje.slovar_grafa
+            graf = omrezje.slovar_grafa
             pot = pot + [zacetek]
             if zacetek == konec:
                 return pot
@@ -131,30 +131,56 @@ def najdi_pot(Omrezje, zacetek, konec, pot = None):
                 return None
             for mesto in graf[zacetek]:
                 if mesto not in pot:
-                    podaljsana_pot = najdi_pot(Omrezje, mesto, konec, pot)
+                    podaljsana_pot = najdi_pot(omrezje, mesto, konec, pot)
                     if podaljsana_pot: 
                         return podaljsana_pot
             return None
         
-def najdi_potnikovo_pot(Omrezje, Potnik, pot = None):
-        zacetek = Potnik.zacetek
-        konec = Potnik.konec
+def najdi_potnikovo_pot(omrezje, potnik, pot = None):
+        zacetek = potnik.zacetek
+        konec = potnik.konec
         """ find a path from start_vertex to end_vertex 
             in graph """
-        return najdi_pot(Omrezje, zacetek, konec)
+        return najdi_pot(omrezje, zacetek, konec)
 
     
 ### ce bo celotna pot potnika "tudi" v poti voznika, ga ta lahko "pobere"
 
-def ali_se_lahko_peljeta(Omrezje, Voznik, Potnik):
-    voznikova_pot = najdi_potnikovo_pot(Omrezje, Voznik)
-    zacetek = Potnik.zacetek
-    konec = Potnik.konec
-    if zacetek and konec in voznikova_pot:
+def ali_se_lahko_peljeta(omrezje, voznik, potnik):
+    voznikova_pot = najdi_potnikovo_pot(omrezje, voznik)
+    zacetek = potnik.zacetek
+    konec = potnik.konec
+    if zacetek in voznikova_pot and konec in voznikova_pot:
         if voznikova_pot.index(zacetek) < voznikova_pot.index(konec):
-            if int(Voznik.prostor) >= 1:
+            if int(voznik.prostor) >= 1:
                 return True
     else:
         return False
-def pelje(Omrezje, Voznik, Potnik):
-        Voznik.prostor = str(int(Voznik.prostor) - 1)
+def pelje(omrezje, voznik, potnik):
+        voznik.prostor = str(int(voznik.prostor) - 1)
+
+
+
+vozniki = []
+potniki = []
+sortirano = {}
+
+
+def prepelji(omrezje, vozniki, potniki): ### vozniki in potniki so seznam
+    for voznik in vozniki:
+            for potnik in potniki:
+                if ali_se_lahko_peljeta(omrezje, voznik, potnik):
+                    ### voznik lahko pelje potnika; mu je na poti in se nima zasedenega avtomobila
+                    pelje(omrezje, voznik, potnik)
+                    potniki.remove(potnik) ### ta potnik je dobil svoj prevoz
+                    if voznik not in sortirano:
+                        sortirano[voznik] = []
+                        sortirano[voznik].append(potnik)
+                    else:
+                        sortirano[voznik].append(potnik)
+    ### sedaj imamo voznike in potnike lepo razvrscene
+
+
+
+
+
